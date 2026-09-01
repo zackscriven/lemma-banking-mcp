@@ -1,0 +1,29 @@
+{
+  "name": "lemma-banking-mcp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Live MCP server for the Lemma healthcare banking API (api.getlemma.com/v0). Read tools open by default; money-movement/write tools gated behind LEMMA_ENABLE_WRITES + per-call confirm.",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "lemma-banking-mcp": "build/index.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node build/index.js",
+    "dev": "tsx src/index.ts",
+    "smoke": "npm run build --silent && node scripts/smoke.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.17.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "tsx": "^4.20.0",
+    "typescript": "^5.8.0"
+  }
+}

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>lemma-banking-mcp — Server Map</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;1,500&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,600&family=Spline+Sans+Mono:ital,wght@0,400;0,600;0,700&display=swap');
+  :root{
+    /* PracticeOS dark-console theme — same palette as ghl-mcp-map.html / mcp-server-map.html */
+    --bg:#1C1523; --panel:#241B2E; --panel2:#2C2238; --line:rgba(167,139,200,.22);
+    --ink:#F2EDF7; --ink-dim:rgba(242,237,247,.64); --ink-faint:rgba(242,237,247,.42);
+    --gold:#A78BC8; --gold-soft:#C7B5E3;
+    --green:#7FBF9E; --red:#EFA5A5; --blue:#8FB6E0; --purple:#C7B5E3; --orange:#EFCB9D;
+    --mono:'Spline Sans Mono',ui-monospace,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:'Nunito',Arial,sans-serif;line-height:1.5;padding:32px 24px 80px}
+  .wrap{max-width:1180px;margin:0 auto}
+  header{border-bottom:2px solid var(--gold);padding-bottom:20px;margin-bottom:28px}
+  header h1{font-size:26px;letter-spacing:.5px;font-family:'Playfair Display',serif}
+  header h1 em{color:var(--gold);font-style:normal}
+  header .sub{color:var(--ink-dim);margin-top:6px;font-size:14px}
+  header .sub code{font-family:var(--mono);color:var(--gold-soft);background:var(--panel2);padding:1px 6px;border-radius:4px}
+
+  .statgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:24px 0}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+  .stat .num{font-size:30px;font-weight:700;color:var(--gold-soft);font-variant-numeric:tabular-nums}
+  .stat .lbl{font-size:12px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+
+  h2{font-size:17px;margin:34px 0 14px;color:var(--gold-soft);text-transform:uppercase;letter-spacing:1.5px}
+  h2 .tag{font-size:11px;color:var(--ink-faint);letter-spacing:0;text-transform:none;font-weight:400;margin-left:10px}
+
+  .flow{background:var(--panel2);border:1px dashed var(--line);border-radius:10px;padding:14px 18px;margin-top:4px;font-family:var(--mono);font-size:12px;color:var(--ink-dim);text-align:center}
+  .flow b{color:var(--gold-soft)}
+
+  .warn{background:linear-gradient(180deg, rgba(239,165,165,0.08), var(--panel));border:1px solid rgba(239,165,165,0.35);border-left:4px solid var(--red);border-radius:10px;padding:18px 20px;margin-top:16px}
+  .warn .tag{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--red);background:rgba(239,165,165,0.12);padding:3px 10px;border-radius:6px;margin-bottom:10px}
+  .warn p{font-size:13.5px;color:var(--ink);margin:0 0 6px}
+  .warn code{font-family:var(--mono);font-size:12px;background:var(--panel2);color:var(--gold-soft);padding:1px 6px;border-radius:4px}
+
+  .gategrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px}
+  @media(max-width:900px){.gategrid{grid-template-columns:repeat(2,1fr)}}
+  .gate{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;text-align:center}
+  .gate .n{font-size:22px;font-weight:700;color:var(--gold-soft)}
+  .gate .l{font-size:11px;color:var(--ink-dim);margin-top:4px}
+  .gate.pass{border-color:rgba(127,191,158,.4)}
+  .gate.pass .n{color:var(--green)}
+  .gatearrow{display:flex;align-items:center;justify-content:center;color:var(--ink-faint);font-size:18px}
+  @media(max-width:900px){.gatearrow{display:none}}
+
+  .domgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+  .dom{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;cursor:pointer;transition:border-color .15s;user-select:none}
+  .dom:hover{border-color:var(--gold-soft)}
+  .dom.active{border-color:var(--gold);background:var(--panel2)}
+  .dom .dn{font-size:13.5px;font-weight:600}
+  .dom .dc{font-size:22px;color:var(--gold-soft);font-weight:700;font-variant-numeric:tabular-nums}
+  .dom .bar{height:5px;background:var(--panel2);border-radius:3px;margin-top:8px;overflow:hidden}
+  .dom .bar i{display:block;height:100%;background:var(--gold);border-radius:3px}
+
+  .controls{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;align-items:center;position:sticky;top:0;background:var(--bg);padding:10px 0;z-index:5}
+  input#q{flex:1;min-width:220px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:11px 14px;color:var(--ink);font-size:14px;outline:none}
+  input#q:focus{border-color:var(--gold)}
+  select{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 12px;color:var(--ink);font-size:13px}
+  .count{font-size:12px;color:var(--ink-faint)}
+  .clearbtn{background:none;border:1px solid var(--line);border-radius:8px;color:var(--ink-dim);padding:10px 14px;font-size:12px;cursor:pointer}
+  .clearbtn:hover{border-color:var(--gold);color:var(--gold-soft)}
+
+  #results{border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .tool{display:grid;grid-template-columns:58px 1fr auto;gap:12px;padding:11px 14px;border-bottom:1px solid var(--panel2);align-items:baseline}
+  .tool:last-child{border-bottom:none}
+  .tool:hover{background:var(--panel)}
+  .m{font-family:var(--mono);font-size:10px;font-weight:700;text-align:center;border-radius:4px;padding:2px 0}
+  .m.GET{background:#1e2a24;color:var(--green)}
+  .m.POST{background:#231f33;color:var(--blue)}
+  .m.DELETE{background:#3a2222;color:var(--red)}
+  .tool .tn{font-family:var(--mono);font-size:13px;color:var(--gold-soft)}
+  .tool .tp{font-family:var(--mono);font-size:11px;color:var(--ink-faint)}
+  .tool .ts{font-size:12px;color:var(--ink-dim);margin-top:2px}
+  .tool .badges{display:flex;gap:6px;align-items:center;justify-self:end}
+  .tv{font-family:var(--mono);font-size:10px;color:var(--ink-faint);border:1px solid var(--line);border-radius:4px;padding:2px 7px;white-space:nowrap}
+  .tv.write{color:var(--red);border-color:rgba(239,165,165,.4)}
+  .tv.gate{color:var(--orange);border-color:rgba(239,203,157,.4)}
+  .tv.sensitive{color:var(--purple);border-color:rgba(199,181,227,.4)}
+
+  .configbox{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px 20px;font-family:var(--mono);font-size:12px;color:var(--ink-dim);white-space:pre;overflow-x:auto}
+  .configbox b{color:var(--gold-soft)}
+
+  footer{margin-top:48px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-faint)}
+  footer code{font-family:var(--mono)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px">
+    <h1><em>lemma-banking-mcp</em> — Server Map</h1>
+  </div>
+  <div class="sub">27 tools · Lemma healthcare banking API (<code>api.getlemma.com/v0</code>) · stdio · built 2026-09-01 from the live OpenAPI spec</div>
+</header>
+
+<div class="statgrid">
+  <div class="stat"><div class="num">27</div><div class="lbl">Tools total</div></div>
+  <div class="stat"><div class="num" style="color:var(--green)">22</div><div class="lbl">Read tools (open)</div></div>
+  <div class="stat"><div class="num" style="color:var(--red)">5</div><div class="lbl">Write tools (gated)</div></div>
+  <div class="stat"><div class="num">8</div><div class="lbl">Resource domains</div></div>
+  <div class="stat"><div class="num">500<span style="font-size:16px">/min</span></div><div class="lbl">Rate limit</div></div>
+  <div class="stat"><div class="num" style="color:var(--red)">OFF</div><div class="lbl">Writes (default)</div></div>
+</div>
+
+<h2>What this server is <span class="tag">one job, real money</span></h2>
+<p style="color:var(--ink-dim);font-size:13.5px;max-width:820px">
+  A live MCP wrapper around Lemma — the healthcare-practice banking platform Helen's entity banks with.
+  It lets an agent read accounts, transactions, lockbox mail, check deposits, insurance remittances (835 ERAs),
+  and cards directly, and — only when deliberately unlocked — move money (ACH / book transfers), issue cards,
+  and save external payment recipients. It is the live counterpart to the separate <b style="color:var(--gold-soft)">lemma_docs_mcp</b>,
+  which only answers "how does the API work" from a small local doc corpus and never touches a real account.
+</p>
+<div class="flow">lemma_docs_mcp ("how does this work?") · read-only local corpus &nbsp;⟷&nbsp; <b>lemma-banking-mcp</b> (this server) · executes live against api.getlemma.com<br>same product, two jobs — one answers questions, one touches real accounts</div>
+
+<h2>Safety gate <span class="tag">every write passes through both checks</span></h2>
+<div class="warn">
+  <span class="tag">Blocked by default</span>
+  <p>This is a <b>live money-movement API</b>. The 5 write tools are registered but refuse to run unless
+  <code>LEMMA_ENABLE_WRITES=true</code> is set in the server's environment <b>and</b> the individual call passes
+  <code>confirm: true</code>. Read tools need neither. Even fully enabled, every write tool's description tells the
+  calling agent it moves real money or creates a real financial instrument — the MCP being callable does not waive
+  Claude's own explicit-confirmation rule for financial actions.</p>
+</div>
+<div class="gategrid">
+  <div class="gate"><div class="n">1</div><div class="l">LEMMA_API_KEY set</div></div>
+  <div class="gatearrow">→</div>
+  <div class="gate"><div class="n">2</div><div class="l">LEMMA_ENABLE_WRITES=true</div></div>
+  <div class="gatearrow">→</div>
+  <div class="gate"><div class="n">3</div><div class="l">confirm: true on the call</div></div>
+  <div class="gatearrow">→</div>
+  <div class="gate pass"><div class="n">✓</div><div class="l">money actually moves</div></div>
+</div>
+<p style="color:var(--ink-faint);font-size:12px;margin-top:12px">
+  Every POST additionally carries a mandatory <code style="font-family:var(--mono);color:var(--gold-soft)">Idempotency-Key</code>,
+  derived deterministically from a caller-supplied <code style="font-family:var(--mono);color:var(--gold-soft)">reference</code> —
+  a retried call with the same reference replays the original result instead of double-paying. POSTs are never
+  auto-retried by the HTTP layer; only GETs back off on 429.
+</p>
+
+<h2>Domains <span class="tag">click to filter the tool list below</span></h2>
+<div class="domgrid" id="domgrid"></div>
+
+<h2 style="margin-top:38px">All tools</h2>
+<div class="controls">
+  <input id="q" type="text" placeholder="Search tool name or description…">
+  <select id="method"><option value="">All methods</option><option>GET</option><option>POST</option><option>DELETE</option></select>
+  <select id="kind"><option value="">Read + write</option><option value="read">Read only</option><option value="write">Write only</option></select>
+  <button class="clearbtn" onclick="clearFilters()">Clear</button>
+  <span class="count" id="count"></span>
+</div>
+<div id="results"></div>
+
+<h2>Wiring it up</h2>
+<div class="configbox"><b>~/Library/Application Support/Claude/claude_desktop_config.json</b> → mcpServers →
+
+"lemma-banking-mcp": {
+  "command": "/Users/zackscriven/.nvm/versions/node/v25.9.0/bin/node",
+  "args": ["/Volumes/Extreme SSD/MCP_Servers/lemma-banking-mcp/build/index.js"],
+  "env": {
+    "LEMMA_API_KEY": "&lt;platform key from the Lemma team — not issued yet&gt;",
+    "LEMMA_ENABLE_WRITES": ""
+  }
+}
+
+Blocker: LEMMA_API_KEY is a *platform* key issued manually by Lemma, not a
+self-serve dashboard key. Email contact@getlemma.com to request one — until
+then every tool call returns a clear "not set" error instead of failing silently.
+Leave LEMMA_ENABLE_WRITES empty for read-only (the safe default).</div>
+
+<footer>
+  Snapshot generated 2026-09-01 alongside the build. Source: <code>/Volumes/Extreme SSD/MCP_Servers/lemma-banking-mcp/</code> ·
+  see <code>README.md</code> for the full env var list and scope notes · offline smoke suite: <code>npm run smoke</code>.
+</footer>
+
+</div>
+
+<script>
+const TOOLS = [
+  {n:"lemma_list_entities", m:"GET", p:"/entities", d:"List legal entities this platform key can access. Top-level scope for everything else.", dom:"Entities", write:false},
+  {n:"lemma_get_entity", m:"GET", p:"/entities/{id}", d:"Get one entity — name, legal structure, NPI, address.", dom:"Entities", write:false},
+  {n:"lemma_get_entity_lockbox", m:"GET", p:"/entities/{id}/lockbox", d:"Get an entity's lockbox mailing address (where payers send checks/EOBs).", dom:"Entities", write:false},
+  {n:"lemma_list_entity_mail", m:"GET", p:"/entities/{id}/mail", d:"List lockbox mail received, including any checks found inside.", dom:"Entities", write:false},
+
+  {n:"lemma_list_bank_accounts", m:"GET", p:"/accounts", d:"List Lemma bank accounts for an entity, with balances.", dom:"Accounts", write:false},
+  {n:"lemma_get_bank_account", m:"GET", p:"/accounts/{id}", d:"Get one bank account — name, account/routing number, balances.", dom:"Accounts", write:false},
+  {n:"lemma_get_account_settlement_instructions", m:"GET", p:"/accounts/{id}/settlement-instructions", d:"Download an account's settlement instructions as a PDF.", dom:"Accounts", write:false},
+
+  {n:"lemma_list_transactions", m:"GET", p:"/transactions", d:"List transactions for a bank account, paginated.", dom:"Transactions", write:false},
+  {n:"lemma_get_transaction", m:"GET", p:"/transactions/{id}", d:"Get one transaction — amount, counterparty, source category.", dom:"Transactions", write:false},
+
+  {n:"lemma_list_external_accounts", m:"GET", p:"/external-accounts", d:"List saved recipients for an entity — the only valid external-transfer destinations.", dom:"External accounts", write:false},
+  {n:"lemma_get_external_account", m:"GET", p:"/external-accounts/{id}", d:"Get one saved recipient — nickname, routing/account, holder type, status.", dom:"External accounts", write:false},
+  {n:"lemma_create_external_account", m:"POST", p:"/external-accounts", d:"Save a new external recipient. Immutable once created — no update API; archiving is email-only.", dom:"External accounts", write:true},
+
+  {n:"lemma_list_check_deposits", m:"GET", p:"/check-deposits", d:"List check deposits, optionally filtered by account.", dom:"Check deposits", write:false},
+  {n:"lemma_get_check_deposit", m:"GET", p:"/check-deposits/{id}", d:"Get one check deposit — status, holds, MICR payer details.", dom:"Check deposits", write:false},
+
+  {n:"lemma_list_remittances", m:"GET", p:"/remittances", d:"List an entity's insurance remittances — payer, amount, trace number, ERA availability.", dom:"Remittances", write:false},
+  {n:"lemma_get_remittance_era", m:"GET", p:"/remittances/{id}/era", d:"Fetch a remittance's 835 Electronic Remittance Advice as raw X12.", dom:"Remittances", write:false},
+
+  {n:"lemma_get_card", m:"GET", p:"/cards/{id}", d:"Get an issued card — nickname, last 4, status, every spending limit.", dom:"Cards", write:false},
+  {n:"lemma_get_card_iframe", m:"GET", p:"/cards/{id}/iframe", d:"Short-lived iframe URL rendering the card's full PAN/CVV.", dom:"Cards", write:false, sensitive:true},
+  {n:"lemma_create_card", m:"POST", p:"/cards", d:"Issue a virtual debit card. At least one spending limit is required — Lemma sets no ceiling of its own.", dom:"Cards", write:true},
+  {n:"lemma_delete_card", m:"DELETE", p:"/cards/{id}", d:"Permanently cancel a card so it can no longer be used.", dom:"Cards", write:true},
+
+  {n:"lemma_get_ach_transfer", m:"GET", p:"/ach-transfer/{id}", d:"Get one outbound ACH transfer — status, amount, statement descriptor.", dom:"Transfers", write:false},
+  {n:"lemma_move_money_externally", m:"POST", p:"/ach-transfer", d:"Send an ACH transfer to a saved recipient. Settles 1-2 business days; >$100k held for manual review.", dom:"Transfers", write:true},
+  {n:"lemma_get_book_transfer", m:"GET", p:"/book-transfer/{id}", d:"Get one internal book transfer by ID.", dom:"Transfers", write:false},
+  {n:"lemma_move_money_internally", m:"POST", p:"/book-transfer", d:"Instant, free transfer between two Lemma accounts owned by granted entities.", dom:"Transfers", write:true},
+  {n:"lemma_list_inbound_ach_transfers", m:"GET", p:"/inbound-ach-transfers", d:"List inbound ACH transfers (money pushed/pulled by outside parties).", dom:"Transfers", write:false},
+  {n:"lemma_get_inbound_ach_transfer", m:"GET", p:"/inbound-ach-transfers/{id}", d:"Get one inbound ACH transfer by ID.", dom:"Transfers", write:false},
+
+  {n:"lemma_get_pdf", m:"GET", p:"/files/{id}", d:"Download a file by ID — e.g. a scanned lockbox mail item.", dom:"Files", write:false},
+];
+
+const DOMS = [...new Set(TOOLS.map(t=>t.dom))];
+let activeDom = "";
+
+function renderDomGrid(){
+  const el = document.getElementById('domgrid');
+  const max = Math.max(...DOMS.map(d=>TOOLS.filter(t=>t.dom===d).length));
+  el.innerHTML = DOMS.map(d=>{
+    const c = TOOLS.filter(t=>t.dom===d).length;
+    return `<div class="dom ${d===activeDom?'active':''}" onclick="toggleDom('${d}')">
+      <div class="dn">${d}</div>
+      <div class="dc">${c}</div>
+      <div class="bar"><i style="width:${(c/max*100).toFixed(0)}%"></i></div>
+    </div>`;
+  }).join('');
+}
+function toggleDom(d){ activeDom = (activeDom===d) ? "" : d; renderDomGrid(); renderResults(); }
+function clearFilters(){ document.getElementById('q').value=''; document.getElementById('method').value=''; document.getElementById('kind').value=''; activeDom=''; renderDomGrid(); renderResults(); }
+
+function renderResults(){
+  const q = document.getElementById('q').value.trim().toLowerCase();
+  const method = document.getElementById('method').value;
+  const kind = document.getElementById('kind').value;
+  const rows = TOOLS.filter(t=>{
+    if (activeDom && t.dom!==activeDom) return false;
+    if (method && t.m!==method) return false;
+    if (kind==='read' && t.write) return false;
+    if (kind==='write' && !t.write) return false;
+    if (q && !(t.n.toLowerCase().includes(q) || t.d.toLowerCase().includes(q) || t.dom.toLowerCase().includes(q))) return false;
+    return true;
+  });
+  document.getElementById('count').textContent = `${rows.length} / ${TOOLS.length} tools`;
+  document.getElementById('results').innerHTML = rows.map(t=>`
+    <div class="tool">
+      <div class="m ${t.m}">${t.m}</div>
+      <div>
+        <div class="tn">${t.n}</div>
+        <div class="tp">${t.p}</div>
+        <div class="ts">${t.d}</div>
+      </div>
+      <div class="badges">
+        ${t.write ? '<span class="tv write">write</span><span class="tv gate">gated</span>' : ''}
+        ${t.sensitive ? '<span class="tv sensitive">sensitive</span>' : ''}
+      </div>
+    </div>`).join('') || '<div style="padding:20px;color:var(--ink-faint);text-align:center">No tools match.</div>';
+}
+
+document.getElementById('q').addEventListener('input', renderResults);
+document.getElementById('method').addEventListener('change', renderResults);
+document.getElementById('kind').addEventListener('change', renderResults);
+
+renderDomGrid();
+renderResults();
+</script>
+</body>
+</html>
