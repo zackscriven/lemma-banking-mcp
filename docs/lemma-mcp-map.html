@@ -161,13 +161,16 @@
 <div class="configbox"><b>~/Library/Application Support/Claude/claude_desktop_config.json</b> → mcpServers →
 
 "lemma-banking-mcp": {
-  "command": "/Users/zackscriven/.nvm/versions/node/v25.9.0/bin/node",
-  "args": ["/Volumes/Extreme SSD/MCP_Servers/lemma-banking-mcp/build/index.js"],
+  "command": "/absolute/path/to/node",
+  "args": ["/absolute/path/to/lemma-banking-mcp/build/index.js"],
   "env": {
-    "LEMMA_API_KEY": "&lt;platform key from the Lemma team — not issued yet&gt;",
+    "LEMMA_API_KEY": "&lt;platform key from the Lemma team&gt;",
     "LEMMA_ENABLE_WRITES": ""
   }
 }
+
+Find your node path with `which node` -- GUI apps don't inherit shell PATH,
+so the absolute path is required.
 
 Blocker: LEMMA_API_KEY is a *platform* key issued manually by Lemma, not a
 self-serve dashboard key. Email contact@getlemma.com to request one — until
@@ -175,8 +178,8 @@ then every tool call returns a clear "not set" error instead of failing silently
 Leave LEMMA_ENABLE_WRITES empty for read-only (the safe default).</div>
 
 <footer>
-  Snapshot generated 2026-09-01 alongside the build. Source: <code>/Volumes/Extreme SSD/MCP_Servers/lemma-banking-mcp/</code> ·
-  see <code>README.md</code> for the full env var list and scope notes · offline smoke suite: <code>npm run smoke</code>.
+  Snapshot generated 2026-09-01 alongside the build. See <code>README.md</code> for the full env var list
+  and scope notes · offline smoke suite: <code>npm run smoke</code>.
 </footer>
 
 </div>

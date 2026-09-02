@@ -46,14 +46,15 @@ npm run smoke        # offline: mock API, 14 assertions, no key needed
 
 Add to `~/Library/Application Support/Claude/claude_desktop_config.json` under
 `mcpServers` (placeholders — paste real values only into the config, never here;
-use the absolute node path since GUI apps don't inherit shell PATH):
+use an absolute node path since GUI apps don't inherit shell PATH — find yours
+with `which node`):
 
 ```json
 "lemma-banking-mcp": {
-  "command": "/Users/zackscriven/.nvm/versions/node/v25.9.0/bin/node",
-  "args": ["/Volumes/Extreme SSD/MCP_Servers/lemma-banking-mcp/build/index.js"],
+  "command": "/absolute/path/to/node",
+  "args": ["/absolute/path/to/lemma-banking-mcp/build/index.js"],
   "env": {
-    "LEMMA_API_KEY": "<platform key from the Lemma team — not issued yet>",
+    "LEMMA_API_KEY": "<platform key from the Lemma team>",
     "LEMMA_ENABLE_WRITES": ""
   }
 }
